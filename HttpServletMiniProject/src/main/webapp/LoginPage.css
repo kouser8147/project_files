@@ -1,0 +1,56 @@
+@charset "UTF-8";
+
+#form{
+	border-radius:25px;
+	 border-style: groove;
+	 margin-left: 500px;
+	 margin-right: 500px;
+	 background-color: transparent;
+}
+
+#form:hover
+{
+	background-color:rgb(236, 218, 209);
+}
+input{
+	padding:13px;
+	border-radius:5px;
+}
+#login{
+	padding-left:75px;
+	padding-right:75px;
+	 background-color: blue;
+	 color:white;
+	 font-weight: bold;
+	
+}
+#submit
+{
+	 background-color: green;
+	 color:white;
+	 font-weight: bold;
+}
+#anchor{
+ text-underline-position: none;
+}
+#pass:hover{
+	background-color: rgb(163, 165, 167);
+}
+#email:hover{
+	background-color: rgb(163, 165, 167);
+}
+
+#new:link, #new:visited {
+            background-color: green;
+            color: white;
+            border: 1px solid none;
+            padding: 15px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            border-radius:10px;
+             font-weight: bold;
+            
+         }
+
+

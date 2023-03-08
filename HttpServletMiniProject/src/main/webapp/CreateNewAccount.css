@@ -1,0 +1,32 @@
+@charset "UTF-8";
+
+#form1{
+	border-radius:25px;
+	 border-style: groove;
+	 margin-left: 500px;
+	 margin-right: 500px;
+	 background-color: white;
+}
+input{
+	padding:13px;
+	border-radius:5px;
+	border-width: 0.5px;
+	border-color:grey;
+}
+input:hover{
+	background-color:skyblue;
+
+}
+#register{
+	background-color:green;
+	color:white;
+	padding-left:40px;
+	padding-right:40px;
+	border-style: none;
+	font-size: 15px;
+	 font-weight: bold;
+}
+
+body{
+	background-color: rgb(212, 194, 194);
+}

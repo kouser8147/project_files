@@ -1,0 +1,54 @@
+@charset "UTF-8";
+
+body{
+	 background-color: yellow;
+	 color:blue;
+	 background-image: image('https://images.app.goo.gl/vLNKpTKfYRcyEiJX7');
+	text-align:center;
+	}
+#inp{
+	padding:13px;
+	border-radius:5px;
+	}
+
+#anchor:link, #anchor:visited {
+           background-color: green;
+            color: white;
+            border: 1px solid none;
+            padding: 15px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            border-radius:10px;
+             font-weight: bold;  
+}
+#anch:link, #anch:visited {
+           background-color:green;
+            color: white;
+            border: 1px solid none;
+            padding: 15px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            border-radius:10px;
+             font-weight: bold;  
+}
+#anc:link, #anc:visited {
+           background-color: green;
+            color: white;
+            border: 1px solid none;
+            padding: 15px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            border-radius:10px;
+             font-weight: bold;  
+}
+
+
+
+
+
+
+
+
