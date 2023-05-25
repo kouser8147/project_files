@@ -1,0 +1,188 @@
+HOW WE CAN ENABLE SECOND LEVEL CACHE
+
+STEPS:
+1.CREATE MAVEN PROJECT
+2.CREATE ENTITY CLASS,ADD NECCESERY DEPENDENCIES IN POM.XML AND CREATE "HIBERNATE.CONFIG.XML" AND DO BASIC CONFIGURATION OF DATABASE
+================================================================================================================================
+3.TRY TO FETCH SAME DATA IN 2 DIFFERENT SESSIONS(only "first level cache" is enabled by default)2 QUERIES WILL BE GENERATED BECAUSE 2ND LEVEL CACHE IS NOT ENABLES
+===============================================================================================================================
+
+public class App 
+{
+    public static void main( String[] args )
+    {
+    	
+    Person p=null;
+    
+    Configuration con=new Configuration().configure().addAnnotatedClass(Person.class);
+    ServiceRegistry sr=new ServiceRegistryBuilder().applySettings(con.getProperties()).buildServiceRegistry();
+    SessionFactory factory=con.buildSessionFactory(sr);
+    
+    Session session1=factory.openSession();
+    session1.getTransaction().begin();
+    p=(Person)session1.get(Person.class, 100);
+    System.out.println(p);
+    session1.getTransaction().commit();
+    session1.close();
+ 
+    System.out.println("==============================================");
+    Session session2=factory.openSession();
+    session2.getTransaction().begin();
+    p=(Person)session2.get(Person.class, 100);
+    System.out.println(p);
+    session2.getTransaction().commit();
+    
+    session2.getTransaction().begin();
+    p=(Person)session2.get(Person.class, 100);
+    System.out.println(p);
+    session2.getTransaction().commit();
+    
+    session2.getTransaction().begin();
+    p=(Person)session2.get(Person.class, 100);
+    System.out.println(p);
+    session2.getTransaction().commit();
+    session2.close();
+    }
+}
+===============================================================================================================================
+4. ADD DEPENDENCIES IN POM.XML AS SHOWN BELOW
+================================================================================================================================
+    
+    <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.cache</groupId>
+  <artifactId>HibernateCache</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>HibernateCache</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>4.1.6.Final</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
+<dependency>
+    <groupId>com.mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <version>8.0.32</version>
+</dependency>
+  <!-- https://mvnrepository.com/artifact/org.ehcache/ehcache -->
+<dependency>
+    <groupId>net.sf.ehcache</groupId>
+    <artifactId>ehcache</artifactId>
+    <version>2.10.1</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-ehcache -->
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-ehcache</artifactId>
+    <version>4.1.6.Final</version>
+</dependency>
+
+
+  </dependencies>
+</project>
+
+=============================================================================================================================
+5.ADD 2 PROPERTY TAGS IN HIBERNATE.CONFIG.XML FILE AS SHOWN BELOW
+==============================================================================================================================
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.password">root</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/aliendb</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hbm2ddl.auto">update</property>
+        <property name="show_sql">true</property>
+        
+        
+        <property name="hibernate.cache.use_second_level_cache">true</property>
+        <property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+        
+    </session-factory>
+</hibernate-configuration>
+
+==============================================================================================================================
+6.MAKE THE @ENTITY CLASS AS CACHABLE BY ADDING 2 ANNOTAION AS SHOWN BELOW
+===============================================================================================================================
+    package com.cache.HibernateCache;
+
+import javax.persistence.Cacheable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.NaturalIdCache;
+
+@Entity
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
+public class Person {
+
+	@Id
+	private int p_id;
+	private String p_name;
+	private int p_age;
+	public int getP_id() {
+		return p_id;
+	}
+	public void setP_id(int p_id) {
+		this.p_id = p_id;
+	}
+	public String getP_name() {
+		return p_name;
+	}
+	public void setP_name(String p_name) {
+		this.p_name = p_name;
+	}
+	public int getP_age() {
+		return p_age;
+	}
+	public void setP_age(int p_age) {
+		this.p_age = p_age;
+	}
+	@Override
+	public String toString() {
+		return "Person [p_id=" + p_id + ", p_name=" + p_name + ", p_age=" + p_age + "]";
+	}
+	
+}
+===============================================================================================================================
+7.NOW RUN THE APPLICATION ONLY ONE QUERY WILL RUN FOR 2 SESSION,IF SAME DATA IS TRYING TO FETCH(SEE ATTACHED OUTPUT)
+===============================================================================================================================
+Hibernate: select person0_.p_id as p1_0_0_, person0_.p_age as p2_0_0_, person0_.p_name as p3_0_0_ from Person person0_ where person0_.p_id=?
+Person [p_id=100, p_name=Shaikh, p_age=25]
+==============================================
+Person [p_id=100, p_name=Shaikh, p_age=25]
+Person [p_id=100, p_name=Shaikh, p_age=25]
+Person [p_id=100, p_name=Shaikh, p_age=25]
+
+
+
+
+
